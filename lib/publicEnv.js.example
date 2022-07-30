@@ -1,0 +1,10 @@
+// This is an example. Copy this file to lib/publicEnv.js for appropriate usage.
+
+module.exports = {
+    frontend: {
+        redirect: {
+            url: "https://example.com", // redirect to page when navigating to /
+            enabled: true // enable redirect
+        } 
+    }
+};

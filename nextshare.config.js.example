@@ -1,0 +1,35 @@
+// THIS IS FOR CORE CONFIGURATION AND SECRET CONFIGURATION
+// CHECK lib/publicEnv.js FOR PUBLIC CONFIG (URL REDIRECTS)
+
+module.exports = {
+    access: {
+        baseUrl: "http://localhost:3000"
+    },
+    listener: {
+        hostname: "127.0.0.1",
+        port: 3000
+    },
+    authentication: [
+        {
+            user: "user1", // The username to use when logging in
+            friendlyName: "User 1", // The friendly name (shows up in the frontend)
+            password: "examplePassword", // Set the user password here
+            roles: ["admin"] // Set user roles (explained soon)
+        }
+    ],
+    storage: {
+        type: "fs", // Set storage types 
+        rootPath: path.join(__dirname + "/datastores"), // If storage type is "fs", set root filesystem path here. This *HAS* to be an absolute path.
+        current: "store1", // Set current datastore
+        datastores: {
+            "store1": {
+                folder: "store1", // Name of datastore, used in URLs (other than static URLs for non-image files)
+                online: true, // If set to offline, the datastore will not be available from the frontend (but will still be accessible from the backend static component)
+                fileNamePolicy: {
+                    type: "random", // Types are: random, hash
+                    fileLength: 14, // Only used if type is random
+                }
+            }
+        }
+    }
+};
