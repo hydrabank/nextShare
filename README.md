@@ -1,6 +1,8 @@
 # nextShare
 
-
+## Configuration files
+- `nextshare.config.js`, the primary configuration and secrets file for nextShare.
+- `lib/publicEnv.js`, the public and customization file for nextShare's frontend.
 
 
 ## Credits

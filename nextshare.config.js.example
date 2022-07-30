@@ -23,6 +23,7 @@ module.exports = {
         current: "store1", // Set current datastore
         datastores: {
             "store1": {
+                friendlyName: "Store A", // Friendly name of datastore (shows up in the frontend)
                 folder: "store1", // Name of datastore, used in URLs (other than static URLs for non-image files)
                 online: true, // If set to offline, the datastore will not be available from the frontend (but will still be accessible from the backend static component)
                 fileNamePolicy: {

@@ -66,7 +66,9 @@ export function getServerSideProps(ctx) {
                 sizeFriendly: { type: "String" },
                 birthDate: new Date(0),
             },
-            isImage: { type: "String" }
+            isImage: { type: "String" },
+            author: { type: "String" },
+            datastore: { type: "String" },
         };
 
         try {
@@ -97,12 +99,14 @@ export function getServerSideProps(ctx) {
             }
 
             tryData.author = author;
+            tryData.datastore = datastore.friendlyName;
 
             tryData.stats = {
                 sizeFriendly: (filesize(stats.size) === 0 ? "[Size indexing unsupported]" : filesize(stats.size)),
                 creationTimeUtc: {
                     time: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.TIME_SIMPLE),
                     date: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.DATE_FULL),
+                    shortDate: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.DATE_SHORT),
                 },
             };
         } catch(e) {
@@ -119,7 +123,6 @@ export function getServerSideProps(ctx) {
         let file = `${access.baseUrl}/ds/${datastore.folder}/${actualFile.name}`;
         
         if (tryData.isImage) {
-            console.log(tryData);
             return {
                 props: {
                     status: "02-1",

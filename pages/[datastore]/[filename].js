@@ -1,11 +1,12 @@
 import { NextSeo } from "next-seo";
 import { getServerSideProps } from "/componentry/ssr/datastoreFrontend";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faUser, faDatabase } from "@fortawesome/free-solid-svg-icons";
 
 export default function TemplatePage(props) {
     return (
         <>
-            <img src="/nextShareLogo.png" alt="nextShare" className="ml-4 mt-4 w-16" />
-            <main className="flex flex-col justify-center h-screen">
+            <main className="flex flex-col justify-center h-screen w-full">
                 {
                     (() => {
                         if (props.status === "01-1") {
@@ -40,12 +41,28 @@ export default function TemplatePage(props) {
                             );
                         } else if (props.status === "02-1") {
                             return (
-                                <div className="flex flex-col px-12 gap-y-8 items-center">
+                                <div className="flex flex-col px-12 gap-y-8 justify-center items-center">
                                     <NextSeo
                                         title={`nextShare - ${props.filename}.${props.extension}`}
                                     />
-                                    <h1 className="text-4xl text-white font-BreezeMono font-bold">my cat is sideways</h1>
-                                    <img src={props.res} className="max-w-[75%]" alt="Image" />
+                                    <h1 className="text-3xl font-BreezeHeader font-bold">
+                                        Image uploaded on <code className="text-blue-300">{props.stats.creationTimeUtc.shortDate}</code>
+                                    </h1>
+                                    <img src={props.res} className="flex flex-col max-w-[115%] md:max-w-[100%] lg:max-w-[60%] rounded-xl" alt="Image" />
+                                    <div className="flex flex-col gap-y-2 px-4 py-4 bg-slate-800 rounded-xl w-fit">
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faClock} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.stats.creationTimeUtc.date} at {props.stats.creationTimeUtc.time}</b>
+                                        </h1>
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faUser} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.author}</b>
+                                        </h1>
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faDatabase} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.datastore}</b>
+                                        </h1>
+                                    </div>
                                 </div>
                             );
                         };
