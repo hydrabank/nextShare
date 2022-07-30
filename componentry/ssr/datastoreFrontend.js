@@ -10,12 +10,15 @@ export function getServerSideProps(ctx) {
     const datastoreQuery = ctx.query.datastore;
 
     const { access, storage, authentication } = require("/nextshare.config.js");
+    const publicEnv = require("/lib/publicEnv.js");
+    publicEnv.accessURL = access.baseUrl;
     const { log } = require("/lib/logWrapper");
     
     if (!storage.datastores[datastoreQuery]) {
         return {
             props: {
                 status: "01-1",
+                publicEnv: publicEnv,
                 datastore: datastoreQuery,
                 filename: filename
             }
@@ -28,6 +31,7 @@ export function getServerSideProps(ctx) {
         return {
             props: {
                 status: "01-1",
+                publicEnv: publicEnv,
                 datastore: datastoreQuery,
                 filename: filename
             }
@@ -42,6 +46,7 @@ export function getServerSideProps(ctx) {
             return {
                 props: {
                     status: "01-1",
+                    publicEnv: publicEnv,
                     datastore: datastoreQuery,
                     filename: filename
                 }
@@ -55,6 +60,7 @@ export function getServerSideProps(ctx) {
             return {
                 props: {
                     status: "01-2",
+                    publicEnv: publicEnv,
                     datastore: datastoreQuery,
                     filename: filename
                 }
@@ -67,6 +73,7 @@ export function getServerSideProps(ctx) {
                 birthDate: new Date(0),
             },
             isImage: { type: "String" },
+            mimeType: { type: "String" },
             author: { type: "String" },
             datastore: { type: "String" },
         };
@@ -100,13 +107,33 @@ export function getServerSideProps(ctx) {
 
             tryData.author = author;
             tryData.datastore = datastore.friendlyName;
+            tryData.mimeType = lookup(actualFile.name) || "application/octet-stream";
+
+            let dateObj = DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" });
+            let dateDay = dateObj.day; // This only exists to twiddle around with validating ordinals, no other reason why this exists
+            let numOrdinals = { // Answer from https://wesbos.com/tip/intl-pluralrules-ordinal
+                one: "st",
+                two: "nd",
+                three: "rd",
+                few: "rd",
+                many: "th",
+                zero: "th",
+                other: "th"
+            };
+
+            let fullDate = {
+                year: dateObj.toLocaleString({ year: "numeric" }),
+                month: dateObj.toLocaleString({ month: "long" }),
+                day: dateDay + numOrdinals[new Intl.PluralRules("en-US", { type: "ordinal" }).select(dateDay)]
+            };
 
             tryData.stats = {
                 sizeFriendly: (filesize(stats.size) === 0 ? "[Size indexing unsupported]" : filesize(stats.size)),
                 creationTimeUtc: {
                     time: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.TIME_SIMPLE),
                     date: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.DATE_FULL),
-                    shortDate: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.DATE_SHORT),
+                    fancyDate: `${fullDate.day} of ${fullDate.month}`,
+                    shortDate: DateTime.fromJSDate(new Date(stats.birthtime), { zone: "utc" }).toLocaleString(DateTime.DATE_SHORT)
                 },
             };
         } catch(e) {
@@ -114,18 +141,20 @@ export function getServerSideProps(ctx) {
             return {
                 props: {
                     status: "01-2",
+                    publicEnv: publicEnv,
                     datastore: datastoreQuery,
                     filename: filename
                 }
             };
         };
         
-        let file = `${access.baseUrl}/ds/${datastore.folder}/${actualFile.name}`;
+        let file = `/ds/${datastore.folder}/${actualFile.name}`;
         
         if (tryData.isImage) {
             return {
                 props: {
                     status: "02-1",
+                    publicEnv: publicEnv,
                     filename: filename,
                     extension: extensionLookup(lookup(actualFile.name)),
                     res: file,
@@ -144,6 +173,7 @@ export function getServerSideProps(ctx) {
         return {
             props: {
                 status: "01-1",
+                publicEnv: publicEnv,
                 datastore: datastoreQuery,
                 filename: filename
             }

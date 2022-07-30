@@ -5,6 +5,14 @@ module.exports = {
         redirect: {
             url: "https://example.com", // redirect to page when navigating to /
             enabled: true // enable redirect
-        } 
+        },
+        customization: {
+            name: "nextShare", // name of the instance
+            embedColour: "#00ff00", // colour of openGraph embeds
+            // to change the icon: swap out icon.png for your own icon (with the same name)
+            // for the favicon: swap out favicon.ico with a new one with the same name (must be .ico)
+            // banner: replace banner.png with your own banner with the same name (regular resolution is 1920x1080)
+            // or fork this repository and manually change the file namepaths
+        }
     }
 };

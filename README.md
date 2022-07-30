@@ -1,4 +1,5 @@
 # nextShare
+A visually-appealing file sharing and upload server. Designed for ShareX, useable with other screenshotting software.
 
 ## Configuration files
 - `nextshare.config.js`, the primary configuration and secrets file for nextShare.
