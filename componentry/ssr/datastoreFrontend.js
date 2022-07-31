@@ -58,7 +58,13 @@ export async function getServerSideProps(ctx) {
         };
 
         const directoryIndex = fs.readdirSync(path.join(storage.rootPath, datastore.folder), { withFileTypes: true });
-        let actualFile = directoryIndex.find(file => file.name.startsWith(filename));
+        let actualFile = directoryIndex.find(file => {
+            if (file.name.includes("_nsAuthor_")) {
+                return file.name.split("_nsAuthor_")[0] === filename;
+            } else {
+                return file.name.replace("." + extensionLookup(lookup(file.name)), "") === filename;
+            };
+        });
         
         if (!actualFile) {
             return {
