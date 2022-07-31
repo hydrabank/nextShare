@@ -2,7 +2,7 @@ import { IncomingForm } from "formidable";
 import fs from "fs";
 import path from "path";
 import * as generator from "generate-password";
-import { extension } from "mime-types";
+import { extension, lookup } from "mime-types";
 import { log } from "/lib/logWrapper";
 import chalk from "chalk";
 
@@ -31,6 +31,14 @@ export default async function handler(req, res) {
     const file = body.files.toUpload;
     if (!file) return res.status(400).send({ status: 400, response: "Bad Request: No file uploaded (upload in body file name toUpload)" });
     defaultRandomGeneratorOptions.length = datastore.fileNamePolicy.fileLength;
+
+    if (datastore.acceptedFilesPolicy?.type !== "all") {
+        if (datastore.acceptedFilesPolicy?.type === "whitelist") {
+            if (!datastore.acceptedFilesPolicy?.whitelist.includes(extension(lookup(file.originalFilename)))) return res.status(400).send({ status: 400, response: "Bad Request: File type not allowed (not on whitelist, use one of the following extensions: " + datastore.acceptedFilesPolicy.whitelist.join(", ") + ")" });
+        } else if (datastore.acceptedFilesPolicy?.type === "blacklist") {
+            if (datastore.acceptedFilesPolicy?.blacklist.includes(extension(lookup(file.originalFilename)))) return res.status(400).send({ status: 400, response: "Bad Request: File type not allowed (on blacklist)" });
+        };
+    };
 
     if (config.storage.type === "fs") {
         const directoryIndex = fs.readdirSync(path.join(config.storage.rootPath, datastore.folder), { withFileTypes: true });

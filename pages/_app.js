@@ -6,7 +6,9 @@ function MyApp({ Component, pageProps }) {
     <>
       <Link href="/" className="w-fit">
         <a className="flex w-fit ml-4 mt-4">
-          <img src="/icon.png" alt="nextShare" className="w-16" />
+          <picture>
+            <img src="/icon.png" alt="nextShare" className="w-16" />
+          </picture>
         </a>
       </Link>
       <Component {...pageProps} />

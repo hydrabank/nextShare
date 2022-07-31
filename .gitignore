@@ -37,3 +37,6 @@ lib/publicEnv.js
 
 # nextShare data
 datastores/
+
+# Personal testing
+personal-test/

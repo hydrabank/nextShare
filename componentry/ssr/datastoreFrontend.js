@@ -1,4 +1,4 @@
-export function getServerSideProps(ctx) {
+export async function getServerSideProps(ctx) {
     const fs = require("fs");
     const path = require("path");
     const filesize = require("filesize");
@@ -9,10 +9,14 @@ export function getServerSideProps(ctx) {
     const { filename } = ctx.query;
     const datastoreQuery = ctx.query.datastore;
 
-    const { access, storage, authentication } = require("/nextshare.config.js");
+    const { access, storage } = require("/nextshare.config.js");
     const publicEnv = require("/lib/publicEnv.js");
     publicEnv.accessURL = access.baseUrl;
     const { log } = require("/lib/logWrapper");
+    const DatabaseManager = require("/lib/Database.js");
+
+    const db = new DatabaseManager({ uri: process.env.NEXTSHARE_AUTHENTICATION_DATABASE_URI, namespace: "authentication" });
+    const authentication = await db.get("users");
     
     if (!storage.datastores[datastoreQuery]) {
         return {
@@ -75,6 +79,7 @@ export function getServerSideProps(ctx) {
             isImage: { type: "String" },
             mimeType: { type: "String" },
             author: { type: "String" },
+            authorColour: { type: "String" },
             datastore: { type: "String" },
         };
 
@@ -82,6 +87,7 @@ export function getServerSideProps(ctx) {
             fs.readFileSync(path.join(storage.rootPath, datastore.folder, actualFile.name));
             let stats = fs.statSync(path.join(storage.rootPath, datastore.folder, actualFile.name));
             let author;
+            let authorColour;
 
             if (typeof lookup(actualFile.name) === "string") {
                 tryData.isImage = lookup(actualFile.name).startsWith("image/")
@@ -98,14 +104,18 @@ export function getServerSideProps(ctx) {
 
                 if (authorObj) {
                     author = authorObj.friendlyName || authorObj.user;
+                    authorColour = authorObj.customColour;
                 } else {
                     author = "Unknown Author";
+                    authorColour = null;
                 };
             } else {
                 author = "Unknown Author";
+                authorColour = null;
             }
 
             tryData.author = author;
+            tryData.authorColour = authorColour || null;
             tryData.datastore = datastore.friendlyName;
             tryData.mimeType = lookup(actualFile.name) || "application/octet-stream";
 
@@ -163,9 +173,13 @@ export function getServerSideProps(ctx) {
             };
         } else {
             return {
-                redirect: {
-                    destination: `${file}`,
-                    permanent: true
+                props: {
+                    status: "02-2",
+                    publicEnv: publicEnv,
+                    filename: filename,
+                    extension: extensionLookup(lookup(actualFile.name)),
+                    res: file,
+                    ...tryData
                 }
             };
         };

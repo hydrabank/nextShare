@@ -1,7 +1,7 @@
 import { NextSeo } from "next-seo";
 import { getServerSideProps } from "/componentry/ssr/datastoreFrontend";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faUser, faDatabase } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faUser, faDatabase, faWarning } from "@fortawesome/free-solid-svg-icons";
 
 export default function TemplatePage(props) {
     return (
@@ -83,6 +83,69 @@ export default function TemplatePage(props) {
                                     </div>
                                 </div>
                             );
+                        } else if (props.status === "02-2") {
+                            return (
+                                <div className="flex flex-col px-12 gap-y-12 justify-center items-center">
+                                    <NextSeo
+                                        title={`${props.publicEnv.frontend.customization.name || "nextShare"} - ${props.filename}.${props.extension}`}
+                                        additionalLinkTags={
+                                            [
+                                                {
+                                                    rel: "icon",
+                                                    href: "/favicon.ico",
+                                                }
+                                            ]
+                                        }
+                                        additionalMetaTags={
+                                            [
+                                                {
+                                                    name: "theme-color",
+                                                    content: props.authorColour || props.publicEnv.frontend.customization.embedColour,
+                                                }
+                                            ]
+                                        }
+                                        openGraph={{
+                                            title: `${props.author} uploaded a file`,
+                                            description: `A file was uploaded on the ${props.stats.creationTimeUtc.fancyDate} at ${props.stats.creationTimeUtc.time}.`,
+                                            site_name: `${props.publicEnv.frontend.customization.name || "nextShare"}`,
+                                            type: "website"
+                                        }}
+                                    />
+                                    <div className="flex flex-col gap-y-6 justify-center items-center">
+                                        <div className="flex flex-col gap-y-2 justify-center items-center">
+                                            <h1 className="font-BreezeHeader text-3xl font-bold">
+                                                <code className="text-blue-300">{props.filename}.{props.extension}</code> was uploaded on <code className="text-blue-300">{props.stats.creationTimeUtc.shortDate}</code>
+                                            </h1>
+                                            <div className="flex flex-col lg:flex-row justify-center lg:gap-x-1">
+                                                <h2 className="flex flex-row gap-x-4 sm:gap-x-4 items-center text-lg font-BreezeAltHeader font-medium text-yellow-300">
+                                                    <FontAwesomeIcon icon={faWarning} className="w-16 sm:w-4" />
+                                                    WARNING! Be wary of malware or viruses from executables.
+                                                </h2>
+                                                <h2 className="flex flex-row gap-x-4 sm:gap-x-4 items-center text-lg font-BreezeAltHeader font-bold text-orange-400">
+                                                    Proceed at your own risk.
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <a href={props.res} target="_blank" rel="noreferrer noopener" className="px-4 py-4 bg-blue-800 rounded-xl text-xl font-bold font-BreezeHeader">
+                                            View file
+                                        </a>
+                                    </div>
+                                    <div className="flex flex-col gap-y-2 px-4 py-4 bg-slate-800 rounded-xl w-fit">
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faClock} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.stats.creationTimeUtc.date} at {props.stats.creationTimeUtc.time} (UTC)</b>
+                                        </h1>
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faUser} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.author}</b>
+                                        </h1>
+                                        <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
+                                            <FontAwesomeIcon icon={faDatabase} className="w-6" />
+                                            <b className="font-bold text-blue-300">{props.datastore}</b>
+                                        </h1>
+                                    </div>
+                                </div>
+                            );
                         } else if (props.status === "02-1") {
                             return (
                                 <div className="flex flex-col px-12 gap-y-8 justify-center items-center">
@@ -123,7 +186,9 @@ export default function TemplatePage(props) {
                                     <h1 className="text-3xl font-BreezeHeader font-bold">
                                         Image uploaded on <code className="text-blue-300">{props.stats.creationTimeUtc.shortDate}</code>
                                     </h1>
-                                    <img src={props.res} className="flex flex-col max-w-[115%] md:max-w-[100%] lg:max-w-[60%] rounded-xl" alt="Image" />
+                                    <picture className="flex flex-col max-w-[115%] md:max-w-[100%] lg:max-w-[60%] rounded-xl">    
+                                        <img src={props.res} alt="Image" />
+                                    </picture>
                                     <div className="flex flex-col gap-y-2 px-4 py-4 bg-slate-800 rounded-xl w-fit">
                                         <h1 className="flex flex-row gap-x-2 items-center text-lg font-BreezeHeader font-bold">
                                             <FontAwesomeIcon icon={faClock} className="w-6" />
