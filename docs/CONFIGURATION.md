@@ -81,9 +81,9 @@ If you wish to use database storage for authentication, you can replace the abov
 At this time, only **mongoDB** is supported.
 
 ```js
-    authentication: {
-        database_env: true
-    }
+authentication: {
+    database_env: true
+}
 ```
 
 - `authentication.database_env`: This is a boolean value that determines whether or not the database authentication is enabled.
