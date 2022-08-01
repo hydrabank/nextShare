@@ -1,5 +1,25 @@
 # How to configure nextShare
 
+## Client configuration example (.sxcu)
+```json
+{
+  "Version": "14.0.1",
+  "Name": "nextShare",
+  "DestinationType": "ImageUploader, TextUploader, FileUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "http://example.com/api/protected/upload",
+  "Headers": {
+    "auth_user": "user",
+    "auth_pass": "password"
+  },
+  "Body": "MultipartFormData",
+  "FileFormName": "toUpload",
+  "URL": "{json:response.url}",
+  "DeletionURL": "{json:response.deleteUrl}",
+  "ErrorMessage": "{json:response}"
+}
+```
+
 ## Configuration files
 There are two configuration files in nextShare:
 
